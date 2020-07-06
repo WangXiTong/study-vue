@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <p @click="onclick">{{counter}}</p>
+      <p @click="onclick1('冬瓜冬瓜我是西瓜')">{{name}}</p>
+      <p k-text="counter"></p>
+      <p k-html="desc"></p>
+    </div>
+    <script src="./kvue.js"></script>
+
+    <script>
+      const app = new KVue({
+        el: "#app",
+        data: {
+          counter: 1,
+          desc: 'kvue<span style="color: red">真棒</span>',
+          name: "冬瓜",
+        },
+        methods: {
+          onclick() {
+            // this必须是组件实例
+            console.log("thisthis", this);
+          },
+          onclick1(text) {
+            console.log("11111", text);
+          },
+        },
+      });
+      setInterval(() => {
+        app.counter++;
+      }, 1000);
+    </script>
+  </body>
+</html>
