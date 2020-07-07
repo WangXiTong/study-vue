@@ -71,7 +71,9 @@ class Observer {
     this.value = value;
 
     // 判断value是obj还是数组
-    this.walk(value);
+    if (typeof value === "object") {
+      this.walk(value);
+    }
   }
 
   walk(obj) {
@@ -102,7 +104,7 @@ class Compile {
         // 冬瓜冬瓜我是西瓜
         this.compileElement(node);
       } else if (this.isInter(node)) {
-        console.log("编译插值表达式", node.textContent);
+        // console.log("编译插值表达式", node.textContent);
         this.compileText(node);
       }
 
@@ -134,16 +136,16 @@ class Compile {
         // 事件
         // 冬瓜冬瓜我是西瓜
         const dir = attrName.substring(1);
-        console.log("exp", exp);
-        console.log("dir", dir);
-        console.log("node", node);
+        // console.log("exp", exp);
+        // console.log("dir", dir);
+        // console.log("node", node);
         let args = [];
         let expName = exp;
         if (/(.\w*)\((.*)\)/.test(exp)) {
           expName = RegExp.$1;
           args = RegExp.$2.split(",");
-          console.log("expName", expName);
-          console.log("args", args);
+          // console.log("expName", expName);
+          // console.log("args", args);
         }
         let fun =
           this.$vm.$options.methods && this.$vm.$options.methods[expName];
@@ -196,6 +198,22 @@ class Compile {
 
   isDirective(attrName) {
     return attrName.indexOf("k-") === 0;
+  }
+
+  // k-model = xx
+  model(node, exp) {
+    // update方法只完成赋值和更新  是单向的
+    this.update(node, exp, "model");
+    // 事件监听
+    node.addEventListener("input", (e) => {
+      // 将新的值 赋值给数据
+      this.$vm[exp] = e.target.value;
+    });
+  }
+
+  modelUpdater(node, value) {
+    // 表单元素赋值
+    node.value = value;
   }
 }
 
