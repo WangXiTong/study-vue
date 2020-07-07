@@ -100,7 +100,7 @@ class Compile {
       if (this.isElement(node)) {
         // console.log("编译元素", node.nodeName);
         // 冬瓜冬瓜我是西瓜
-        this.compileElement(node, this.$vm.$options.methods);
+        this.compileElement(node);
       } else if (this.isInter(node)) {
         console.log("编译插值表达式", node.textContent);
         this.compileText(node);
@@ -117,7 +117,7 @@ class Compile {
     // node.textContent = this.$vm[RegExp.$1];
     this.update(node, RegExp.$1, "text");
   }
-  compileElement(node, fn) {
+  compileElement(node) {
     // 获取节点属性
     const nodeAttrs = node.attributes;
     Array.from(nodeAttrs).forEach((attr) => {
@@ -136,18 +136,19 @@ class Compile {
         const dir = attrName.substring(1);
         console.log("exp", exp);
         console.log("dir", dir);
-        console.log("fn", fn);
         console.log("node", node);
-        if (exp.indexOf("(") > 0) {
-          // 有参数  目前只考虑一个参数
-          console.log("getParenthesesStr", getParenthesesStr(exp));
-          let fnName = exp.substring(0, exp.indexOf("("));
-          node.addEventListener(dir, function () {
-            fn[fnName](getParenthesesStr(exp));
-          });
-        } else {
-          // 无参数
-          node.addEventListener(dir, fn[exp]);
+        let args = [];
+        let expName = exp;
+        if (/(.\w*)\((.*)\)/.test(exp)) {
+          expName = RegExp.$1;
+          args = RegExp.$2.split(",");
+          console.log("expName", expName);
+          console.log("args", args);
+        }
+        let fun =
+          this.$vm.$options.methods && this.$vm.$options.methods[expName];
+        if (exp && fun) {
+          node.addEventListener(dir, fun.bind(this.$vm, ...args));
         }
       }
     });
@@ -196,16 +197,6 @@ class Compile {
   isDirective(attrName) {
     return attrName.indexOf("k-") === 0;
   }
-}
-
-function getParenthesesStr(text) {
-  // 冬瓜冬瓜我是西瓜
-  let result = "";
-  let regex = /\((.+?)\)/g;
-  let options = text.match(regex);
-  let option = options[0];
-  result = option.substring(1, option.length - 1);
-  return result;
 }
 
 // Watcher 小秘书  界面中的一个依赖对应一个小秘书

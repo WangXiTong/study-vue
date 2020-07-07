@@ -8,7 +8,7 @@
   <body>
     <div id="app">
       <p @click="onclick">{{counter}}</p>
-      <p @click="onclick1('冬瓜冬瓜我是西瓜')">{{name}}</p>
+      <p @click="onclick1('冬瓜冬瓜我是西瓜', 'asdf')">{{name}}</p>
       <p k-text="counter"></p>
       <p k-html="desc"></p>
     </div>
@@ -26,14 +26,17 @@
           onclick() {
             // this必须是组件实例
             console.log("thisthis", this);
+            console.log("cccccc", this.counter);
+            this.counter = 11;
           },
-          onclick1(text) {
-            console.log("11111", text);
+          onclick1(text1, text2) {
+            console.log("11111", text1);
+            console.log("22222", text2);
           },
         },
       });
       setInterval(() => {
-        app.counter++;
+        // app.counter++;
       }, 1000);
     </script>
   </body>
